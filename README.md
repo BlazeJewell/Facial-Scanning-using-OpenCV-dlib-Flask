@@ -1,6 +1,6 @@
 # GreenBit
 
-Here is the source code for our Facial Recongnition program.
+Here is the source code for our Facial Recongnition program. (Note: you only need to download the lated version to run)
 
 We are now at Version 0.7, which includes:
   - the facial landmarks
