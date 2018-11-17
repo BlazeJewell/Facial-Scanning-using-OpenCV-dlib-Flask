@@ -12,8 +12,13 @@ import dlib
 import cv2
 #36-42 R
 
-past_values_x = []
 
+
+table = PrettyTable()
+table.field_names = ['Time', 'Eye Aspect Ratio', 'Right Eye Aspect Ratio', 'Left Eye Aspect Ratio', 'Blinks', 'Right Eye Blinks', 'Left Eye Blinks', 'Mouth Aspect Ratio', 'Mouth Opening Count', "Looking Direction"]
+
+
+past_values_x = []
 def min_intensity_x(img):
 	img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 	
@@ -37,6 +42,7 @@ def min_intensity_x(img):
 		past_values_x.pop(0)
 	
 	return int(sum(past_values_x) / len(past_values_x))
+
 
 past_values_y = []
 def min_intensity_y(img):
@@ -72,7 +78,7 @@ def extract_eye(image, left, bottom_left, bottom_right, right, upper_right, uppe
 	pupil_x = min_intensity_x(eye)
 	pupil_y = min_intensity_y(eye)
 	
-	cv2.line(eye,(pupil_x,0),(pupil_x,len(eye)),(0,255,0), 1)
+	cv2.line(eye,(pupil_x,0),(pupil_x,len(eye)),(255,0,0), 1)
 	cv2.line(eye,(0,pupil_y),(len(eye[0]),pupil_y),(0,255,0), 1)
 	
 	cv2.line(image,(int((bottom_left[0] + bottom_right[0]) / 2), lower_bound), (int((upper_left[0] + upper_right[0]) / 2), upper_bound),(0,0,255), 1)
@@ -80,6 +86,27 @@ def extract_eye(image, left, bottom_left, bottom_right, right, upper_right, uppe
 	
 	image[upper_bound-3:lower_bound+3, left[0]-3:right[0]+3] = eye
 	return eye
+
+def getDirection(image, left, bottom_left, bottom_right, right, upper_right, upper_left):
+	lower_bound = max([left[1], right[1], bottom_left[1], bottom_right[1], upper_left[1], upper_right[1]])
+	upper_bound = min([left[1], right[1], upper_left[1], upper_right[1], bottom_left[1], bottom_right[1]])
+
+	eye = image[upper_bound-3:lower_bound+3, left[0]-3:right[0]+3]
+	
+	pupil_x = min_intensity_x(eye)
+	pupil_y = min_intensity_y(eye)
+	
+	#Here is wen we check if user is looking left or right
+	if pupil_x < 25:
+		lookingDirection = "right"
+
+	elif pupil_x > 35:
+		lookingDirection = "left"
+
+	else:
+		lookingDirection = "center"
+
+	return lookingDirection
 
 def eye_aspect_ratio(eye):
 	# compute the euclidean distances between the two sets of
@@ -158,9 +185,6 @@ vs = FileVideoStream(args["video"]).start()
 vs = VideoStream(src=0).start()
 #vs = VideoStream(usePiCamera=True).start()
 fileStream = False
-
-table = PrettyTable()
-table.field_names = ['Time', 'Eye Aspect Ratio', 'Right Eye Aspect Ratio', 'Left Eye Aspect Ratio', 'Blinks', 'Right Eye Blinks', 'Left Eye Blinks', 'Mouth Aspect Ratio', 'Mouth Opening Count']
 
 time.sleep(1.0)
 
@@ -254,8 +278,9 @@ while True:
 		# loop over the (x, y)-coordinates for the facial landmarks
 		# and draw them on the image
 		count = 1
-		right_eye = imutils.resize(extract_eye(frame, shape[36], shape[41], shape[40], shape[39], shape[38], shape[37]), width=100, height=50)
+		right_eye = imutils.resize(extract_eye(frame, shape[36], shape[41], shape[40], shape[39], shape[38], shape[37]), width=100, height=50)		
 		
+		lookingDirection = getDirection(frame, shape[36], shape[41], shape[40], shape[39], shape[38], shape[37])
 		
 		frame[0:len(right_eye),0:len(right_eye[0])] = right_eye
 			
@@ -288,14 +313,20 @@ while True:
 		#draw the total number of blinks on the frame
 		cv2.putText(frame, "Blinks: {}".format(TOTAL), (10, 240),
 		cv2.FONT_HERSHEY_TRIPLEX, 0.7, (0, 204, 0), 2)
+
 		#draw the total number of blinks on the frame
 		cv2.putText(frame, "Mouth Opened: {}".format(MOUTHTOTAL), (10, 270),
 		cv2.FONT_HERSHEY_TRIPLEX, 0.7, (0, 204, 0), 2)
-		# draw the computed eye aspect ratio for the frame
+
+		# draw the computed mouth aspect ratio for the frame
 		cv2.putText(frame, "mouth aspect ratio: {:.6f}".format(mouthMAR), (10, 300),
 		cv2.FONT_HERSHEY_TRIPLEX, 0.7, (0, 204, 0), 2)
+
+		# draw the looking direction for the frame
+		cv2.putText(frame, "Looking direction: {}".format(lookingDirection), (10, 330),
+		cv2.FONT_HERSHEY_TRIPLEX, 0.7, (0, 204, 0), 2)
 	
-		table.add_row([time.strftime("%a, %d %b %Y %H:%M:%S"), "{:.6f}".format(ear), "{:.6f}".format(rightEAR), "{:.6f}".format(leftEAR), "{}".format(TOTAL), "{}".format(RIGHTTOTAL), "{}".format(LEFTTOTAL),   "{:.6f}".format(mouthMAR),  "{}".format(MOUTHTOTAL)])
+		table.add_row([time.strftime("%a, %d %b %Y %H:%M:%S"), "{:.6f}".format(ear), "{:.6f}".format(rightEAR), "{:.6f}".format(leftEAR), "{}".format(TOTAL), "{}".format(RIGHTTOTAL), "{}".format(LEFTTOTAL),   "{:.6f}".format(mouthMAR),  "{}".format(MOUTHTOTAL), lookingDirection])
 
 	# show the frame
 	cv2.imshow("Eye blink detection with OpenCV, Python, and dlib", frame)
