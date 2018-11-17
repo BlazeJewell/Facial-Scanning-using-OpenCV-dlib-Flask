@@ -8,6 +8,7 @@ We are now at Version 0.7, which includes:
   - eye aspect ratio
   - mouth aspect ratio
   - eye tracker
+  - Determine which way a person is looking
 
 Command to run the code with webcam:  python Version_0.7.py --shape-predictor shape_predictor_68_face_landmarks.dat
 
