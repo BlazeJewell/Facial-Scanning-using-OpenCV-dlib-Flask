@@ -329,7 +329,7 @@ while True:
 		table.add_row([time.strftime("%a, %d %b %Y %H:%M:%S"), "{:.6f}".format(ear), "{:.6f}".format(rightEAR), "{:.6f}".format(leftEAR), "{}".format(TOTAL), "{}".format(RIGHTTOTAL), "{}".format(LEFTTOTAL),   "{:.6f}".format(mouthMAR),  "{}".format(MOUTHTOTAL), lookingDirection])
 
 	# show the frame
-	cv2.imshow("Eye blink detection with OpenCV, Python, and dlib", frame)
+	cv2.imshow("Facial Detection with OpenCV, Python, and dlib", frame)
 	key = cv2.waitKey(1) & 0xFF
  
 	# if the `q` key was pressed, break from the loop
