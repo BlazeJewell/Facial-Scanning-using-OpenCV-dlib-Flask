@@ -10,9 +10,6 @@ import imutils
 import time
 import dlib
 import cv2
-#36-42 R
-
-
 
 table = PrettyTable()
 table.field_names = ['Time', 'Eye Aspect Ratio', 'Right Eye Aspect Ratio', 'Left Eye Aspect Ratio', 'Blinks', 'Right Eye Blinks', 'Left Eye Blinks', 'Mouth Aspect Ratio', 'Mouth Opening Count', "Looking Direction"]
@@ -42,7 +39,6 @@ def min_intensity_x(img):
 		past_values_x.pop(0)
 	
 	return int(sum(past_values_x) / len(past_values_x))
-
 
 past_values_y = []
 def min_intensity_y(img):
@@ -240,19 +236,10 @@ while True:
 		mouthHull = cv2.convexHull(mouthFind)
 		cv2.drawContours(frame, [mouthHull], -1, (0, 255, 0), 1)
 
-		# check to see if the eye aspect ratio is below the blink
+			# check to see if the eye aspect ratio is below the blink
 		# threshold, and if so, increment the blink frame counter
 		if rightEAR < EYE_AR_THRESH and leftEAR < EYE_AR_THRESH:
-			COUNTER += 1
-
-		if leftEAR < EYE_AR_THRESH:
-			LEFTCOUNTER += 1
-
-		if rightEAR < EYE_AR_THRESH:
-			RIGHTCOUNTER += 1
-
-		if mouthMAR < MOUTH_AR_THRESH:
-			MOUTHCOUNTER += 1
+			COUNTER += 1        		
 		# otherwise, the eye aspect ratio is not below the blink
 		# threshold
 		else:
@@ -260,19 +247,29 @@ while True:
 			# then increment the total number of blinks
 			if COUNTER >= EYE_AR_CONSEC_FRAMES:
 				TOTAL += 1
-			if MOUTHCOUNTER >= EYE_AR_CONSEC_FRAMES:
-				MOUTHTOTAL += 1
-
-			if LEFTCOUNTER >= EYE_AR_CONSEC_FRAMES:
-				LEFTTOTAL += 1
-
-			if RIGHTCOUNTER >= EYE_AR_CONSEC_FRAMES:
-				RIGHTTOTAL += 1
-
+		
 			# reset the eye frame counter
 			COUNTER = 0
-			LEFTCOUNTER = 0
+		
+		if rightEAR < EYE_AR_THRESH:
+			RIGHTCOUNTER += 1
+		else:
+			if RIGHTCOUNTER >= EYE_AR_CONSEC_FRAMES:
+				RIGHTTOTAL += 1
 			RIGHTCOUNTER = 0
+
+		if leftEAR < EYE_AR_THRESH:
+			LEFTCOUNTER += 1
+		else: 
+			if LEFTCOUNTER >= EYE_AR_CONSEC_FRAMES:
+				LEFTTOTAL += 1
+			LEFTCOUNTER = 0
+
+		if mouthMAR < MOUTH_AR_THRESH:
+			MOUTHCOUNTER += 1
+		else:
+			if MOUTHCOUNTER >= EYE_AR_CONSEC_FRAMES:
+				MOUTHTOTAL += 1
 			MOUTHCOUNTER = 0
 
 		# loop over the (x, y)-coordinates for the facial landmarks
@@ -337,6 +334,8 @@ while True:
 		break
 
 print(table)
+with open('table.txt', 'w') as w:
+    w.write(str(table))
 
 # do a bit of cleanup
 cv2.destroyAllWindows()
