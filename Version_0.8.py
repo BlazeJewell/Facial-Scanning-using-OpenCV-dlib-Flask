@@ -261,9 +261,9 @@ while True:
         # Start timer when eyes are closed and display message
 		if rightEAR > EYE_AR_THRESH and leftEAR > EYE_AR_THRESH:		
 			EYES = "Open"
-			START = timer()
-		else:
 			END = timer()
+		else:
+			START = timer()
 			SECONDS = END-START
 			EYES = "Closed"
 		
