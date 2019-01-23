@@ -2,6 +2,7 @@
 
 Here is the source code for our Facial Recongnition program. (Note: you only need to download the lated version to run)
 
+Required file can be found here: https://github.com/davisking/dlib-models
 We are now at Version 0.9, which includes:
   - the facial landmarks
   - blink counter
