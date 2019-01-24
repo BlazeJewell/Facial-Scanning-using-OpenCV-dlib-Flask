@@ -13,6 +13,7 @@ We are now at Version 0.9, which includes:
   - Eye timer to see how long eyes are closed (Version 0.8)
   - Display if eyes are opened or closed (Version 0.8)
   - Head movement - Nod Direction (Version 0.9)
+  
 When you update the code, rename it to the next version and update this document.
 
 ## To turn on the virtual environment (using anaconda):
