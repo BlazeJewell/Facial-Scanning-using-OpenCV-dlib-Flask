@@ -14,9 +14,9 @@ We are now at Version 0.9 for the facial scanning, which includes:
   - Head movement - Nod Direction (Version 0.9)
 
 # Instructions to run this code  
-### 1.1 Follow the instruction
+### 1.1 -> Follow the instruction
    https://www.learnopencv.com/install-opencv-3-and-dlib-on-windows-python-only/
-### 1.2 when you get to setp 3.2, after the first 2 commands, install cmake (pip install cmake), then use this command to install dlib: 
+### 1.2 -> when you get to setp 3.2, after the first 2 commands, install cmake (pip install cmake), then use this command to install dlib: 
   conda install -c conda-forge dlib
 ### 2.0 -> turn on the virtual environment (using anaconda):
   activate opencv-env
